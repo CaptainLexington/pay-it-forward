@@ -2,3 +2,6 @@ temp
 .tmp
 dist
 *.swp
+.figwheel.log
+resources/unpacked/compiled
+target/

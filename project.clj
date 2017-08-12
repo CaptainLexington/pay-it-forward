@@ -5,6 +5,9 @@
                  [binaryage/chromex "0.5.9"]
                  [binaryage/devtools "0.9.4"]
                  [figwheel "0.5.10"]
+                 [reagent "0.6.1"]
+                 [re-frame "0.9.4" ]
+                 [re-com "0.9.0"]
                  [environ "1.1.0"]]
 
   :plugins [[lein-cljsbuild "1.1.6"]

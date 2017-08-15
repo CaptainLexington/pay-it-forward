@@ -33,6 +33,12 @@
                        :label (:name affiliate)
                        :width "150px"]
                :on-change #(re-frame/dispatch [:select-affiliate (:id affiliate)])]
+              [re-com/hyperlink-href
+               :href "https://smile.amazon.com"
+               :target "_blank"
+               :label [re-com/md-icon-button
+                       :size :smaller
+                       :md-icon-name "zmdi-open-in-new" ]]
               [re-com/md-icon-button
                :size :smaller
                :md-icon-name (icon-by-status (:status affiliate))

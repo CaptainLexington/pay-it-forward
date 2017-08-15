@@ -7,7 +7,9 @@
                  [figwheel "0.5.10"]
                  [reagent "0.6.1"]
                  [re-frame "0.9.4" ]
+                 [akiroz.re-frame/storage "0.1.2"]
                  [re-com "0.9.0"]
+                 [re-frisk "0.4.5"]
                  [environ "1.1.0"]]
 
   :plugins [[lein-cljsbuild "1.1.6"]
@@ -30,7 +32,7 @@
              {:cljsbuild {:builds
                           {:background
                            {:source-paths ["src/background"]
-                            :figwheel     true
+                            :figwheel     {:websocket-host "capnlex.duckdns.org"}
                             :compiler     {:output-to     "resources/unpacked/compiled/background/main.js"
                                            :output-dir    "resources/unpacked/compiled/background"
                                            :asset-path    "compiled/background"
@@ -40,12 +42,12 @@
                                            :source-map    true}}
                            :popup
                            {:source-paths ["src/popup"]
-                            :figwheel     true
+                            :figwheel     {:websocket-host "capnlex.duckdns.org"}
                             :compiler     {:output-to     "resources/unpacked/compiled/popup/main.js"
                                            :output-dir    "resources/unpacked/compiled/popup"
                                            :asset-path    "compiled/popup"
                                            :preloads      [devtools.preload]
-                                           :main          chromex-sample.popup
+                                           :main          pay-it-forward.popup
                                            :optimizations :none
                                            :source-map    true}}}}}
              :unpacked-content-script
@@ -105,7 +107,7 @@
                             :compiler     {:output-to     "resources/release/compiled/popup.js"
                                            :output-dir    "resources/release/compiled/popup"
                                            :asset-path    "compiled/popup"
-                                           :main          chromex-sample.popup
+                                           :main          pay-it-forward.popup
                                            :optimizations :advanced
                                            :elide-asserts true}}
                            :content-script

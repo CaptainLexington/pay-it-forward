@@ -4,12 +4,14 @@
                  [org.clojure/core.async "0.3.443"]
                  [binaryage/chromex "0.5.9"]
                  [binaryage/devtools "0.9.4"]
+                 [binaryage/oops "0.5.6"]
                  [figwheel "0.5.10"]
                  [reagent "0.6.1"]
                  [re-frame "0.9.4" ]
                  [akiroz.re-frame/storage "0.1.2"]
                  [re-com "0.9.0"]
                  [re-frisk "0.4.5"]
+                 [com.cemerick/url "0.1.1"]
                  [environ "1.1.0"]]
 
   :plugins [[lein-cljsbuild "1.1.6"]
@@ -37,7 +39,7 @@
                                            :output-dir    "resources/unpacked/compiled/background"
                                            :asset-path    "compiled/background"
                                            :preloads      [devtools.preload]
-                                           :main          chromex-sample.background
+                                           :main          pay-it-forward.background
                                            :optimizations :none
                                            :source-map    true}}
                            :popup
@@ -99,7 +101,7 @@
                             :compiler     {:output-to     "resources/release/compiled/background.js"
                                            :output-dir    "resources/release/compiled/background"
                                            :asset-path    "compiled/background"
-                                           :main          chromex-sample.background
+                                           :main          pay-it-forward.background
                                            :optimizations :advanced
                                            :elide-asserts true}}
                            :popup

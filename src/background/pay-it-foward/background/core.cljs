@@ -1,5 +1,6 @@
 (ns pay-it-forward.background.core
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]]
+                   [oops.core :refer [oget+]])
   (:require [goog.string :as gstring]
             [goog.string.format]
             [cljs.core.async :refer [<! chan]]
@@ -8,6 +9,7 @@
             [chromex.protocols :refer [post-message! get-sender]]
             [chromex.ext.tabs :as tabs]
             [chromex.ext.runtime :as runtime]
+            [chromex.ext.web-navigation :as nav]
             [pay-it-forward.background.storage :refer [test-storage!]]))
 
 (def clients (atom []))
@@ -53,6 +55,10 @@
     (case event-id
       ::runtime/on-connect (apply handle-client-connection! event-args)
       ::tabs/on-created (tell-clients-about-new-tab!)
+      ::nav/on-before-navigate (let [[options] event-args]
+                                 (tabs/update
+                                   (oget+ options "tabId")
+                                   (clj->js {"url" "https://www.google.com"})))
       nil)))
 
 (defn run-chrome-event-loop! [chrome-event-channel]
@@ -67,6 +73,7 @@
   (let [chrome-event-channel (make-chrome-event-channel (chan))]
     (tabs/tap-all-events chrome-event-channel)
     (runtime/tap-all-events chrome-event-channel)
+    (nav/tap-on-before-navigate-events chrome-event-channel (clj->js {"url" [{"hostSuffix" "amazon.com"}]}))
     (run-chrome-event-loop! chrome-event-channel)))
 
 ; -- main entry point -------------------------------------------------------------------------------------------------------

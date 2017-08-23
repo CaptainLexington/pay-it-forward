@@ -1,6 +1,5 @@
 (ns pay-it-forward.background.core
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]]
-                   [oops.core :refer [oget+]])
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [goog.string :as gstring]
             [goog.string.format]
             [cljs.core.async :refer [<! chan]]
@@ -10,6 +9,7 @@
             [chromex.ext.tabs :as tabs]
             [chromex.ext.runtime :as runtime]
             [chromex.ext.web-navigation :as nav]
+            [cemerick.url :as url]
             [pay-it-forward.background.storage :refer [test-storage!]]))
 
 (def clients (atom []))
@@ -49,16 +49,24 @@
 
 ; -- main event loop --------------------------------------------------------------------------------------------------------
 
+(defn final-url [amazon affiliate]
+  (str
+    (assoc amazon 
+           :query {:tag affiliate})))
+
 (defn process-chrome-event [event-num event]
-  (log (gstring/format "BACKGROUND: got chrome event (%05d)" event-num) event)
   (let [[event-id event-args] event]
     (case event-id
       ::runtime/on-connect (apply handle-client-connection! event-args)
       ::tabs/on-created (tell-clients-about-new-tab!)
-      ::nav/on-before-navigate (let [[options] event-args]
-                                 (tabs/update
-                                   (oget+ options "tabId")
-                                   (clj->js {"url" "https://www.google.com"})))
+      ::nav/on-before-navigate (let [options (js->clj (first event-args))
+                                     tab-id (get options "tabId")
+                                     url (url/url (get options "url"))]
+                                 (when (nil? (get (:query url) "tag"))
+                                   (log (clj->js event))
+                                   (tabs/update
+                                     tab-id 
+                                     (clj->js {"url" (final-url url "basicinstr20")}))))
       nil)))
 
 (defn run-chrome-event-loop! [chrome-event-channel]
@@ -73,7 +81,7 @@
   (let [chrome-event-channel (make-chrome-event-channel (chan))]
     (tabs/tap-all-events chrome-event-channel)
     (runtime/tap-all-events chrome-event-channel)
-    (nav/tap-on-before-navigate-events chrome-event-channel (clj->js {"url" [{"hostSuffix" "amazon.com"}]}))
+    (nav/tap-on-before-navigate-events chrome-event-channel (clj->js {"url" [{"hostSuffix" ".amazon.com"}]}))
     (run-chrome-event-loop! chrome-event-channel)))
 
 ; -- main entry point -------------------------------------------------------------------------------------------------------

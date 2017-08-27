@@ -3,5 +3,8 @@ temp
 dist
 *.swp
 .figwheel.log
+.cljs_rhino_repl/
+.lein-repl-history
+.nrepl-port
 resources/unpacked/compiled
 target/

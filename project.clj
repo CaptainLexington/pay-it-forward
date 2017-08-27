@@ -30,7 +30,13 @@
 
   :cljsbuild {:builds {}}                                                                                                     ; prevent https://github.com/emezeske/lein-cljsbuild/issues/413
 
-  :profiles {:unpacked
+  :profiles {:dev
+             {:dependencies [[com.cemerick/piggieback "0.2.2"]
+                             [org.clojure/tools.nrepl "0.2.10"]]
+              :repl-options
+              {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}} 
+             
+             :unpacked
              {:cljsbuild {:builds
                           {:background
                            {:source-paths ["src/background"]

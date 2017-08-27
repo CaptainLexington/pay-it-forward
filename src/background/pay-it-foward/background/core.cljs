@@ -49,6 +49,26 @@
 
 ; -- main event loop --------------------------------------------------------------------------------------------------------
 
+(defn chance [odds consequent alternative]
+  (let [numerator (first odds)
+        denominator (last odds)]
+    (if (< (rand)
+           (/ numerator consequent))
+      consequent
+      alternative)))
+
+(defn choose [affiliates]
+  (rand-nth (reduce #(concat %1 (repeat (last %2) (first %2)))
+                    []
+                    affiliates)))
+  
+(defn random-affiliate [affiliates]
+  (if (nil? (get affiliates "payitforw20")
+            (choose affiliates)
+            (chance [1 :in 10]
+                    "payitforw20"
+                   (choose affiliates)))))
+
 (defn final-url [amazon affiliate]
   (str
     (assoc amazon 
@@ -61,12 +81,13 @@
       ::tabs/on-created (tell-clients-about-new-tab!)
       ::nav/on-before-navigate (let [options (js->clj (first event-args))
                                      tab-id (get options "tabId")
-                                     url (url/url (get options "url"))]
+                                     url (url/url (get options "url"))
+                                     affiliate "basicinstr20"]
                                  (when (nil? (get (:query url) "tag"))
                                    (log (clj->js event))
                                    (tabs/update
                                      tab-id 
-                                     (clj->js {"url" (final-url url "basicinstr20")}))))
+                                     (clj->js {"url" (final-url url affiliate)}))))
       nil)))
 
 (defn run-chrome-event-loop! [chrome-event-channel]
